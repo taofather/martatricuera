@@ -85,44 +85,118 @@
 
   
     <div class="container">
-    
-
     <h2>Locucions</h2>
+    <p>Col·laboro amb <a href="https://www.lacongamusic.com/es/servicios/locuciones/" target="_blank">La Conga Músic</a></p>
+    <div class="audio-player" id="audioPlayer">
+        <audio id="audioElement" preload="metadata">
+            <source src="/images/Locucio-Marta.mp3" type="audio/mpeg">
+        </audio>
 
-    <p>Col·laboro amb La Conga Músic, trobareu <a href="https://ca.lacongamusic.com/locucion" target="_blank">mostres de la meva veu en aquest link (MARTA)</a>.</p>
+        <button class="audio-player__play-btn" id="playBtn" aria-label="Play">
+            <svg class="audio-player__icon audio-player__icon--play" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z"/>
+            </svg>
+            <svg class="audio-player__icon audio-player__icon--pause" viewBox="0 0 24 24" fill="currentColor" style="display:none">
+                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+            </svg>
+        </button>
 
-    
-    <div class="row">
-            <!-- Post item YouTube-->
-            <div class="post-item">
-                <div class="post-item-wrap">
-                    <div class="post-item-description">
-                        <h3>HEAD, raquetes de pàdel</h3>
-                    </div>
-                    <div class="post-video">
-                        <div class="js-lazyYT" data-ratio="16:9" data-youtube-id="uQ-yXImfuns"></div>
-                    </div>
-                </div>
-            </div>
-            <!-- end: Post item YouTube-->
+        <div class="audio-player__time" id="currentTime">0:00</div>
+
+        <div class="audio-player__progress" id="progressBar">
+            <div class="audio-player__progress-filled" id="progressFilled"></div>
         </div>
-    
-    <div class="row">
-            <!-- Post item YouTube-->
-            <div class="post-item">
-                <div class="post-item-wrap">
-                    <div class="post-item-description">
-                        <h3>Publicitat Don Piso</h3>
-                    </div>
-                    <div class="post-video">
-                        <div class="js-lazyYT" data-ratio="16:9" data-youtube-id="51DkuWrESCQ"></div>
-                    </div>
-                </div>
-            </div>
-            <!-- end: Post item YouTube-->
-        </div>
+
+        <div class="audio-player__time" id="duration">0:00</div>
+
+        <button class="audio-player__volume-btn" id="volumeBtn" aria-label="Mute">
+            <svg class="audio-player__icon audio-player__icon--vol-on" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+            </svg>
+            <svg class="audio-player__icon audio-player__icon--vol-off" viewBox="0 0 24 24" fill="currentColor" style="display:none">
+                <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+            </svg>
+        </button>
+
+        <input type="range" class="audio-player__volume-slider" id="volumeSlider" min="0" max="1" step="0.05" value="1">
+    </div>
+
     
 </div>
+
+<script>
+(function() {
+    var audio = document.getElementById('audioElement');
+    var playBtn = document.getElementById('playBtn');
+    var iconPlay = playBtn.querySelector('.audio-player__icon--play');
+    var iconPause = playBtn.querySelector('.audio-player__icon--pause');
+    var progressBar = document.getElementById('progressBar');
+    var progressFilled = document.getElementById('progressFilled');
+    var currentTimeEl = document.getElementById('currentTime');
+    var durationEl = document.getElementById('duration');
+    var volumeBtn = document.getElementById('volumeBtn');
+    var volumeSlider = document.getElementById('volumeSlider');
+    var iconVolOn = volumeBtn.querySelector('.audio-player__icon--vol-on');
+    var iconVolOff = volumeBtn.querySelector('.audio-player__icon--vol-off');
+
+    function formatTime(sec) {
+        if (isNaN(sec)) return '0:00';
+        var m = Math.floor(sec / 60);
+        var s = Math.floor(sec % 60);
+        return m + ':' + (s < 10 ? '0' : '') + s;
+    }
+
+    audio.addEventListener('loadedmetadata', function() {
+        durationEl.textContent = formatTime(audio.duration);
+    });
+
+    audio.addEventListener('timeupdate', function() {
+        var pct = (audio.currentTime / audio.duration) * 100;
+        progressFilled.style.width = pct + '%';
+        currentTimeEl.textContent = formatTime(audio.currentTime);
+    });
+
+    audio.addEventListener('ended', function() {
+        iconPlay.style.display = '';
+        iconPause.style.display = 'none';
+        playBtn.classList.remove('audio-player__play-btn--playing');
+    });
+
+    playBtn.addEventListener('click', function() {
+        if (audio.paused) {
+            audio.play();
+            iconPlay.style.display = 'none';
+            iconPause.style.display = '';
+            playBtn.classList.add('audio-player__play-btn--playing');
+        } else {
+            audio.pause();
+            iconPlay.style.display = '';
+            iconPause.style.display = 'none';
+            playBtn.classList.remove('audio-player__play-btn--playing');
+        }
+    });
+
+    progressBar.addEventListener('click', function(e) {
+        var rect = progressBar.getBoundingClientRect();
+        var pct = (e.clientX - rect.left) / rect.width;
+        audio.currentTime = pct * audio.duration;
+    });
+
+    volumeBtn.addEventListener('click', function() {
+        audio.muted = !audio.muted;
+        iconVolOn.style.display = audio.muted ? 'none' : '';
+        iconVolOff.style.display = audio.muted ? '' : 'none';
+        volumeSlider.value = audio.muted ? 0 : audio.volume;
+    });
+
+    volumeSlider.addEventListener('input', function() {
+        audio.volume = this.value;
+        audio.muted = (this.value == 0);
+        iconVolOn.style.display = (this.value == 0) ? 'none' : '';
+        iconVolOff.style.display = (this.value == 0) ? '' : 'none';
+    });
+})();
+</script>
 
   
 
@@ -131,7 +205,7 @@
     <div class="copyright-content">
   <div class="container">
     <div class="text-center"><a href="/es/locucions.html">castellano</a> | <a href=" /locucions.html">català</a></li></div>
-    <div class="copyright-text text-center">&copy;2025 Marta Tricuera</div>
+    <div class="copyright-text text-center">&copy;2026 Marta Tricuera</div>
     <div class="text-center"><a href="https://www.linkedin.com/in/jordi-caballero/" target="_blank">taofather static websites</a></div>
   </div>
 </div>
