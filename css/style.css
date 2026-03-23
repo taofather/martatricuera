@@ -5949,6 +5949,12 @@ label.p-checkbox { display: block; cursor: pointer; }
 @keyframes audio-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(168, 131, 37, 0.4); }
   50% { box-shadow: 0 0 0 10px rgba(168, 131, 37, 0); } }
 
+.post-video--short-row { display: flex; justify-content: center; }
+
+.post-video--short { max-width: 360px; margin: 0 auto; }
+
+.post-video--short .lazyYT-container { border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); }
+
 @media (max-width: 576px) { .audio-player { flex-wrap: wrap; } .audio-player__progress { order: 10; flex-basis: 100%; margin-top: 4px; } .audio-player__volume-slider { width: 50px; } }
 
 a { color: #a88325; }
